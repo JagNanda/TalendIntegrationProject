@@ -1,23 +1,23 @@
 # TalendIntegrationProject
 Combine data from different databases using Talend and filter the results into a .csv file based on project requirements to get the desired output. Please note that although this was a group project, it was completed individually by myself.
 
-##Project Requirements
+## Project Requirements
 
 The project for this course is worth 25% of your mark and you have the option to do it in a group of three or four people. A Group Contract must be assigned by each group
 
-###Introduction
+### Introduction
 
 In this project you will assist a pet rescue charity with managing their donations related data. The charity organizes an annual donation drive. The city is divided to donations areas (every donation area is approximately 6 postal codes) and assign a group of volunteers to every area. The volunteers will go door to door in their designated areas in order to collect donations from the residents. They can collect cash, checks, or credit card payments. At the end of every week the volunteering group leaders will fill in a list with the donation record that were collected in their area, and send it to the charity main office. The staff in the main office will load the list to a central table after rejecting non-valid entries and then use the data to perform analysis.
 
-###Data Sources
+### Data Sources
 
-####Central Donations Repository
+#### Central Donations Repository
 The tables created by projectTables.sql script resides in the charity’s oracle database server as well as the list of the volunteers.
 
-####Donation List
+#### Donation List
 The list of donors is stored in a comma separated file named donorsList.csv. This is the list that the volunteer group lead sends to the main office. It shows the schema and contains only two entries, but each member of the group (presumably a volunteer with a distinct volunteer no) must provide a separate list for their "area" with at least 15 entries. As a result each group will have three (or four) donor lists that contain 15 additional entries in the donors list. Make sure that there are both valid and invalid entries. The invalid entries will be rejected and sent back to the volunteer coordinator.
 
-####Master Addresses Table
+#### Master Addresses Table
 The address table that the charity maintains is not updated and it often gets out of date. However, there is another department in the organization has an address table that they regularly update and keep current. The table is in SQLServer database and below is the connection information to the server
 Server Name: dbr.fast.sheridanc.on.ca
 Port: 1433
@@ -26,7 +26,7 @@ Schema Name: dbo
 User Name: DataIntegrator
 Password: Sher1dan
 
-###Tasks
+### Tasks
 
 1.	Refresh the address table in the oracle database with the addresses in the master table. You will need to transform some data types and generate a sequential id for the address. Also note that the ids of some addresses will be used as foreign key in donation table your solution should accommodate this fact.
 
