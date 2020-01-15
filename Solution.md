@@ -215,4 +215,166 @@ CREATE TABLE fact_donation(
 ```
 
 
+## Task 4
+
+### Question: Create a process to load the data to the star schema from the central donation repository
+
+### Solution to Task 4
+
+#### Inserting Table Data into the Star Schema
+
+**Inserting into the Dimensonal Volunteer Table**
+```
+INSERT INTO dim_volunteer
+    SELECT 
+        dim_volunteer_id.NEXTVAL,
+        volunteer_id,
+        first_name,
+        last_name,
+        group_leader
+    FROM 
+        volunteer; 
+```
+20 rows inserted.
+
+**Inserting into the Dimensional Address Table**
+```
+INSERT INTO dim_address 
+    SELECT
+        dim_address_id.NEXTVAL,
+        address_id,
+        street_number,
+        street_name,
+        street_type,
+        street_direction,
+        city,
+        province
+    FROM
+        address;
+```
+2,221 rows inserted.
+
+**Inserting into the Dimensional Donation Day Table**
+```
+INSERT INTO dim_donation_day
+    SELECT 
+        dim_day_id.NEXTVAL, 
+        donation_day,
+        donation_month,
+        donation_year
+    FROM
+        (
+            SELECT DISTINCT 
+                EXTRACT (DAY FROM donation_date) AS donation_day,
+                EXTRACT (MONTH FROM donation_date) AS donation_month,
+                EXTRACT (YEAR FROM donation_date) AS donation_year
+            FROM 
+                donation
+        );
+``` 
+5 rows inserted.
+
+**Inserting into the Fact Donation Table**
+```
+INSERT INTO fact_donation
+    SELECT
+          v_id,
+          a_id,
+          day_id,
+          donation_amount
+    FROM
+        donation d
+        JOIN dim_address a 
+            ON a.address_id = d.address_id
+        JOIN dim_volunteer v
+            ON v.volunteer_id = d.volunteer_id
+        JOIN dim_donation_day dd
+            ON dd.donation_day = EXTRACT(DAY FROM d.donation_date);
+ 19 rows inserted.
+```
+
+## Task 5
+
+### Question: 5.	Create views that show
+####  o	The average and sum of the donation by day, month, year
+####  o	The average and sum of the donations by address, postal code
+####  o	The average and sum of the donations by volunteer and volunteer group leader
+
+### Solution to Task 5
+
+**Donations by Day, Month, and Year**
+```
+CREATE OR REPLACE VIEW DONATIONS_BY_DATE AS
+    SELECT 
+        donation_year,
+        donation_month,
+        donation_day,
+        SUM(donation_amount) AS "Total Donations", 
+        ROUND(AVG(donation_amount),2) AS "Average Donation"
+        FROM dim_donation_day d
+        JOIN fact_donation f
+            ON d.day_id = f.day_id
+        GROUP BY ROLLUP(donation_year,donation_month,donation_day)
+        ORDER BY 1,2;
+```
+
+**Donations By Address and Postal Code**
+Postal code was not included in any address meaning that the SUM and AVG will return no rows and therefore no view was created.
+```
+CREATE OR REPLACE VIEW DONATIONS_BY_ADDRESS AS
+    SELECT a.address_id, 
+        SUM(donation_amount) AS "Total Donation", 
+        ROUND(AVG(donation_amount),2) AS "Average Donation"
+    FROM dim_address a
+    JOIN fact_donation d
+        ON a.a_id = d.a_id
+    GROUP BY a.address_id
+    ORDER BY 1;
+```
+        
+**Donations By Volunteer and Volunteer Leader**
+```
+CREATE OR REPLACE VIEW DONATIONS_BY_VOLUNTEER AS
+    SELECT 
+        v.group_leader,
+        v.volunteer_id,
+        SUM(donation_amount) AS "Total Donation",
+        ROUND(AVG(donation_amount),2) AS "Average Donation"
+    FROM dim_volunteer v
+    JOIN fact_donation d
+        ON v.v_id = d.v_id
+    GROUP BY ROLLUP (v.group_leader,v.volunteer_id)
+    ORDER BY 1;
+```
+
+## Task 6
+
+### Question: 6.	Basic Security
+####    o	Create a user named DMLUser and give the user permissions to       implement all DML on address, donation, and volunteer tables
+####    o	Create a user named Dashboard and give the user read permissions on the views
+
+### Solution to Task 6:
+
+```
+CREATE USER DMLUser
+IDENTIFIED BY pass;
+ 
+GRANT SELECT, UPDATE, INSERT, DELETE ON address TO DMLUser;
+GRANT SELECT, UPDATE, INSERT, DELETE ON volunteer TO DMLUser;
+GRANT SELECT, UPDATE, INSERT, DELETE ON donation TO DMLUser;
+ 
+CREATE USER Dashboard
+IDENTIFIED BY pass;
+GRANT SELECT ON donations_by_address TO Dashboard;
+GRANT SELECT ON donations_by_date TO Dashboard;
+GRANT SELECT ON donations_by_volunteer TO Dashboard;
+```
+
+**DMLUSER:**
+![image](https://user-images.githubusercontent.com/47337941/72452910-52a95680-378c-11ea-9be1-74d793dd2828.png)
+
+**DASHBOARD**
+![image](https://user-images.githubusercontent.com/47337941/72452965-63f26300-378c-11ea-9feb-9a3c8f833092.png)
+
+
 
