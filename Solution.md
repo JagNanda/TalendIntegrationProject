@@ -12,6 +12,7 @@ NOTE: For the below csv files results, not all the results are included in the s
 Here a tDBInput component is used to extract the addresses from the SQLServer master table and is connected to a tMap component and an Oracle tDBOutput component. 
 
 **tMap_1**
+
 ![image](https://user-images.githubusercontent.com/47337941/72447886-1a057f00-3784-11ea-9729-d1965d8fd09d.png)
 
 In the tMap component, a numeric sequence is used for the ADDRESS_ID. Also the code in the expression filter:
@@ -81,6 +82,7 @@ For the columns, only the indexes have changed.
 **tMap1 rejectedDonations1.csv**
 
 Here the donationslist.csv records that have been rejected by the other two expression filters are stored. Because there are an extremely large number of ways incorrect information can be stored in the donationslist.csv, the address has not been split. 
+
 ![image](https://user-images.githubusercontent.com/47337941/72450714-d3feea00-3788-11ea-8a96-d56a93b4ba88.png)
 
 **tMap2**
@@ -88,6 +90,7 @@ Here the donationslist.csv records that have been rejected by the other two expr
 ![image](https://user-images.githubusercontent.com/47337941/72450759-deb97f00-3788-11ea-84ae-a43952fe56fa.png)
 
 tMap2 is used to validate the address in the cleansedDonations.csv by comparing it using the ADDRESS table as a lookup (tDBInput). 
+
 ![image](https://user-images.githubusercontent.com/47337941/72450785-eed15e80-3788-11ea-99cd-6fdbe42035b8.png)
 
 Here the settings are set to unique match and inner join so that only the matching expression keys with the oracle ADDRESS table will be output into the oracle DONATION table.
@@ -101,6 +104,7 @@ For the STREET_TYPE and STREET_DIR, the replace method is used to get rid of the
 
 **tMap2 Connection to Donation Table Oracle Database (tDBOutput)**
 All of the records that match the lookup entries are sent to the database to be stored in the oracle Donations table. Something interesting to note is that there is no id column in the tMap2 component for the validaddress output table.
+
 ![image](https://user-images.githubusercontent.com/47337941/72451071-630c0200-3789-11ea-849a-9d0b18e054f0.png)
 
 The reason for this is because I wanted to use a sequence that I created in my Oracle DB so that when I run my third job (to add records with two words in their street name) they will have the next sequence value as their DON_ID.  Nocache was included here because the LAST_NUMBER would skip several values.
@@ -115,31 +119,39 @@ In order to accomplish this, I found a method that allowed me to use a sequence 
 Here I created an additional column and set the SQL expression to use sequence(NEXTVAL) that I created in the Oracle DB. Now even when running a third job for street names with two words, the correct sequence will be used.
 This is the result in the Oracle database after the job has finished.
 `SELECT * FROM DONATION;`
+
 ![image](https://user-images.githubusercontent.com/47337941/72451215-98185480-3789-11ea-98dd-d4a9e6e7a77b.png)
 
 
 **tMap2 RejectedDonations2.csv**
 In this file, the rejected entries are stored if they did not match any of the addresses in the lookup to the oracle database ADDRESS table.  
+
 ![image](https://user-images.githubusercontent.com/47337941/72451264-a8303400-3789-11ea-9b19-3195874da691.png)
 
 The reason why there is a second rejected donations list is because this one stores addresses that are formatted correctly (have a STREET_TYPE, STREET_DIR, are in Oakville and in Ontario, and have a street type that exists in the oracle ADDRESS table: BLVD, RD, PKY, LANE, DR, and ST), but the STREET_NUM/STREET_NAME/STREET_TYPE/STREET_DIR combination do not exist in the oracle ADDRESS table.
+
 ![image](https://user-images.githubusercontent.com/47337941/72451346-c5fd9900-3789-11ea-90d1-173d4ee30cfe.png)
 
 
 ![image](https://user-images.githubusercontent.com/47337941/72451370-d01f9780-3789-11ea-9324-2a13410839c7.png)
+
 This job handles donation records that have 2 words in their street name. The donationsListTwoWord.csv was created in the loadDonations job and imported as metadata for this job. Here the process is nearly identical to the second tMap in the loadDonations job except the donationsListWord.csv has two words for the street address. 
 **tMap1**
+
 ![image](https://user-images.githubusercontent.com/47337941/72451431-e9284880-3789-11ea-8457-bdd142c87ec5.png)
 
 Here the tDBOutput for the Oracle Donation table once again uses the sequence defined in the oracle database.
+
 ![image](https://user-images.githubusercontent.com/47337941/72451590-2ab8f380-378a-11ea-9420-d6b65b30a5df.png)
 
 Next, the result in the oracle database DONATION table after the job has completed:
+
 ![image](https://user-images.githubusercontent.com/47337941/72451636-3b696980-378a-11ea-9e4c-861fa76eebd7.png)
 
 As we can see the correct sequence is being used and the two word street names are added to the DONATION table.
 
 **tMap1 RejectedDonations3.csv**
+
 ![image](https://user-images.githubusercontent.com/47337941/72451701-520fc080-378a-11ea-885a-f789656c4922.png)
 
 
@@ -371,9 +383,11 @@ GRANT SELECT ON donations_by_volunteer TO Dashboard;
 ```
 
 **DMLUSER:**
+
 ![image](https://user-images.githubusercontent.com/47337941/72452910-52a95680-378c-11ea-9be1-74d793dd2828.png)
 
 **DASHBOARD**
+
 ![image](https://user-images.githubusercontent.com/47337941/72452965-63f26300-378c-11ea-9feb-9a3c8f833092.png)
 
 
