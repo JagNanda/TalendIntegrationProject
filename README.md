@@ -37,10 +37,15 @@ Password: Sher1dan
 4.	Create a process to load the data to the star schema from the central donation repository
 
 5.	Create views that shows
+
   o	The average and sum of the donation by day, month, year
+  
   o	The average and sum of the donations by address, postal code
+  
   o	The average and sum of the donations by volunteer and volunteer group leader
   
 6.	Basic Security
+
   o	Create a user named DMLUser and give the user permissions to implement all DML on address, donation, and volunteer tables
+  
   o	Create a user named Dashboard and give the user read permissions on the views
