@@ -1,5 +1,5 @@
-# TalendIntegrationProject
-Combine data from different databases using Talend and filter the results into a .csv file based on project requirements to get the desired output. Please note that although this was a group project, it was completed individually by myself. See **Solution.md** for the solution for this project.
+# Talend Integration Project
+The purpose of this project was to combine data from different databases using **TALEND** and filter the results into a .csv file based on project requirements to get the desired output. Please note that although this was a group project, it was completed individually by myself. See **[Solution.md](Solution.md)** for the solution for this project.
 
 ## Project Requirements
 
